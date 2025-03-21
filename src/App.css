@@ -1,46 +1,34 @@
 .container {
+  width: 100vw;
   height: 100vh;
-  width: 100%;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #f5f5f5;
-  padding: 2rem;
-  border-radius: 12px;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .content {
+  position: relative;
   width: 100%;
   height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 8px;
-  position: relative;
   box-sizing: border-box;
-  background-color: #f5f5f5;
 }
 
 .inner-content {
-  background-color: #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  transition: background-color 0.3s ease;
-  background-repeat: no-repeat;
   position: relative;
+  width: 100%;
+  height: 100%;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .split-container-vertical,
 .split-container-horizontal {
+  display: flex;
   width: 100%;
   height: 100%;
-  display: flex;
   position: relative;
-  background-color: #f5f5f5;
-  padding: 0.5rem;
-  border-radius: 8px;
-  gap: 1rem;
-  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .split-container-vertical {
@@ -53,237 +41,117 @@
 
 .split-section {
   position: relative;
-  min-height: 10%;
-  min-width: 10%;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  flex-shrink: 0;
-  box-sizing: border-box;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   overflow: hidden;
-}
-
-.divider {
-  position: absolute;
-  z-index: 10;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: transparent;
-  will-change: transform;
-  touch-action: none;
-  pointer-events: all;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.divider::after {
-  content: '';
-  position: absolute;
-  background-color: #e0e0e0;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.divider.vertical {
-  width: 3rem;
-  height: 12px;
-  cursor: row-resize;
-}
-
-.divider.horizontal {
-  height: 3rem;
-  width: 12px;
-  cursor: col-resize;
-}
-
-.divider.dragging {
-  transition: none;
-  cursor: grabbing;
-}
-
-.divider.vertical::after {
-  width: 100%;
-  height: 6px;
-  border-radius: 3px;
-}
-
-.divider.horizontal::after {
-  height: 100%;
-  width: 6px;
-  border-radius: 3px;
-}
-
-.divider:hover::after,
-.divider.dragging::after {
-  background-color: #007bff;
-  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.25);
 }
 
 .button-group {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
   position: absolute;
-  top: 50%;
+  top: 8px;
   left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: rgba(255, 255, 255, 0.9);
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 4px;
   z-index: 10;
-}
-
-.inner-content:hover .button-group {
-  opacity: 1;
-  visibility: visible;
-}
-
-.inner-content {
-  position: relative;
-}
-
-.inner-content::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.1);
   opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-  z-index: 5;
+  transition: opacity 0.2s;
 }
 
-.inner-content:hover::before {
+.inner-content:hover > .button-group {
   opacity: 1;
 }
 
 .split-button {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
-  border: none;
-  background-color: white;
-  color: #666;
+  width: 24px;
+  height: 24px;
+  padding: 4px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
   cursor: pointer;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s ease;
-  padding: 0;
 }
 
 .split-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.split-button svg {
-  width: 1.2rem;
-  height: 1.2rem;
-}
-
-.split-button.merge {
-  background-color: #4a90e2;
-  color: white;
+  background: #f0f0f0;
 }
 
 .split-button.delete {
-  background-color: #e25c5c;
-  color: white;
+  color: #ff4444;
 }
 
-.split-button.color {
-  background: linear-gradient(45deg, #ff9999, #99ff99, #9999ff);
-  color: white;
-}
-
-.split-button.color.remove {
-  background: #666;
-}
-
-.split-button.image {
-  background-color: #6c5ce7;
-  color: white;
-}
-
+.split-button.color.remove,
 .split-button.image.remove {
-  background-color: #666;
+  color: #ff4444;
 }
 
 .tooltip {
   position: absolute;
-  background-color: rgba(0, 0, 0, 0.9);
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  font-size: 0.875rem;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
-  z-index: 1000;
-  bottom: calc(100% + 10px);
-  left: 50%;
-  transform: translateX(-50%) translateY(5px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-.tooltip::after {
-  content: '';
-  position: absolute;
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
-  border-width: 5px;
-  border-style: solid;
-  border-color: rgba(0, 0, 0, 0.9) transparent transparent transparent;
+  margin-top: 4px;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s, visibility 0.2s;
 }
 
 .tooltip.visible {
   opacity: 1;
   visibility: visible;
-  transform: translateX(-50%) translateY(0);
+}
+
+.divider {
+  background: #ccc;
+  position: relative;
+  z-index: 1;
+}
+
+.divider.vertical {
+  height: 4px;
+  cursor: row-resize;
+}
+
+.divider.horizontal {
+  width: 4px;
+  cursor: col-resize;
+}
+
+.divider.dragging,
+.divider:hover {
+  background: #999;
 }
 
 .color-picker {
   position: absolute;
-  top: calc(100% + 10px);
+  top: 40px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: white;
-  padding: 0.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.5rem;
-  z-index: 100;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  padding: 4px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  z-index: 20;
 }
 
 .color-option {
-  width: 2rem;
-  height: 2rem;
+  width: 24px;
+  height: 24px;
   border-radius: 4px;
-  border: 2px solid transparent;
   cursor: pointer;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  border: 1px solid #ccc;
 }
 
 .color-option:hover {
@@ -291,34 +159,39 @@
 }
 
 .color-option.cancel {
-  background: linear-gradient(45deg, #ff0000 0%, #ff0000 45%, #ffffff 45%, #ffffff 55%, #ff0000 55%, #ff0000 100%);
-  border: 2px solid #ddd;
   position: relative;
-  overflow: hidden;
+  background: white;
 }
 
-.color-option.cancel:hover {
-  border-color: #ff0000;
+.color-option.cancel::before,
+.color-option.cancel::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 2px;
+  background: #ff4444;
+}
+
+.color-option.cancel::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.color-option.cancel::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
 }
 
 .grid-container {
   display: grid;
-  width: 100%;
-  height: 100%;
-  gap: 1rem;
-  padding: 0.5rem;
-  box-sizing: border-box;
-  background-color: #f5f5f5;
-  border-radius: 8px;
+  gap: 4px;
+  padding: 4px;
 }
 
 .grid-item {
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  position: relative;
+  min-width: 0;
+  min-height: 0;
 }
 
 .grid-dialog-overlay {
@@ -327,145 +200,110 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
-  justify-content: center;
   align-items: center;
-  z-index: 1000;
+  justify-content: center;
+  z-index: 100;
 }
 
 .grid-dialog {
-  background-color: white;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: white;
+  padding: 16px;
+  border-radius: 8px;
   min-width: 300px;
-}
-
-.grid-dialog h3 {
-  margin: 0 0 1.5rem;
-  color: #333;
-  text-align: center;
-  font-size: 1.5rem;
 }
 
 .grid-input-group {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: 16px;
+  margin: 16px 0;
 }
 
 .grid-input-group label {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  flex: 1;
-  font-size: 0.875rem;
-  color: #666;
+  gap: 4px;
 }
 
 .grid-input-group input {
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
+  width: 60px;
+  padding: 4px;
 }
 
 .grid-preview {
-  background-color: #f5f5f5;
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  min-height: 150px;
+  border: 1px solid #ccc;
+  padding: 8px;
+  margin-bottom: 16px;
 }
 
 .grid-preview-row {
   display: flex;
-  gap: 0.5rem;
-  flex: 1;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.grid-preview-row:last-child {
+  margin-bottom: 0;
 }
 
 .grid-preview-cell {
-  flex: 1;
-  background-color: white;
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  width: 20px;
+  height: 20px;
+  background: #f0f0f0;
+  border: 1px solid #ccc;
 }
 
 .grid-dialog-buttons {
   display: flex;
-  gap: 1rem;
   justify-content: flex-end;
+  gap: 8px;
 }
 
 .grid-dialog-buttons button {
-  padding: 0.5rem 1rem;
+  padding: 8px 16px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 0.875rem;
-  transition: all 0.2s ease;
 }
 
 .grid-dialog-buttons button:first-child {
-  background-color: #007bff;
+  background: #4CAF50;
   color: white;
 }
 
-.grid-dialog-buttons button:first-child:hover {
-  background-color: #0056b3;
-}
-
 .grid-dialog-buttons button:last-child {
-  background-color: #e0e0e0;
-}
-
-.grid-dialog-buttons button:last-child:hover {
-  background-color: #c0c0c0;
-}
-
-.split-button.grid {
-  background-color: #9c27b0;
-}
-
-.split-button.grid:hover {
-  background-color: #7b1fa2;
+  background: #f0f0f0;
 }
 
 .padding-handle {
   position: absolute;
-  width: 1.5rem;
-  height: 1.5rem;
-  background-color: transparent;
-  cursor: pointer;
-  opacity: 0;
-  transition: opacity 0.2s ease;
+  background: transparent;
+  z-index: 2;
 }
 
-.content:hover .padding-handle {
-  opacity: 1;
+.padding-handle:hover {
+  background: rgba(0, 0, 0, 0.1);
 }
 
-.padding-handle:hover,
 .padding-handle.dragging {
-  opacity: 1;
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .padding-handle.top,
 .padding-handle.bottom {
-  left: 50%;
-  transform: translateX(-50%);
-  cursor: row-resize;
+  left: 0;
+  right: 0;
+  height: 8px;
+  cursor: ns-resize;
 }
 
 .padding-handle.left,
 .padding-handle.right {
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: col-resize;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: ew-resize;
 }
 
 .padding-handle.top {
@@ -482,36 +320,4 @@
 
 .padding-handle.right {
   right: 0;
-}
-
-.padding-handle::after {
-  content: '';
-  position: absolute;
-  background-color: #007bff;
-  border-radius: 2px;
-  opacity: 0.5;
-  transition: opacity 0.2s ease;
-}
-
-.padding-handle:hover::after,
-.padding-handle.dragging::after {
-  opacity: 1;
-}
-
-.padding-handle.top::after,
-.padding-handle.bottom::after {
-  width: 100%;
-  height: 4px;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.padding-handle.left::after,
-.padding-handle.right::after {
-  width: 4px;
-  height: 100%;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
 }
