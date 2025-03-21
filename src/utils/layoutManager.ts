@@ -6,65 +6,59 @@ export interface LayoutImage {
 }
 
 export interface LayoutFile {
-  version: '1.0';
-  layout: BoxState[];
+  version: string;
+  boxes: BoxState[];
   images: LayoutImage[];
 }
 
 export const saveLayout = (boxes: BoxState[]): LayoutFile => {
   const images: LayoutImage[] = [];
-  const imageMap = new Map<string, string>();
+  let imageId = 1;
 
-  const processNode = (node: BoxState): BoxState => {
-    const processedNode = { ...node };
-
-    if (node.backgroundImage) {
-      const imageId = `img_${images.length + 1}`;
-      images.push({
-        id: imageId,
-        data: node.backgroundImage
-      });
-      imageMap.set(node.backgroundImage, imageId);
-      processedNode.backgroundImage = imageId;
+  const processBox = (box: BoxState): BoxState => {
+    const newBox = { ...box };
+    
+    if (box.backgroundImage) {
+      const imageData = box.backgroundImage;
+      const id = `img_${imageId++}`;
+      images.push({ id, data: imageData });
+      newBox.backgroundImage = id;
     }
 
-    if (node.children) {
-      processedNode.children = node.children.map(child => processNode(child));
+    if (box.children) {
+      newBox.children = box.children.map(processBox);
     }
 
-    return processedNode;
+    return newBox;
   };
 
-  const processedLayout = boxes.map(box => processNode(box));
+  const processedBoxes = boxes.map(processBox);
 
   return {
     version: '1.0',
-    layout: processedLayout,
-    images
+    boxes: processedBoxes,
+    images,
   };
 };
 
-export const loadLayout = (layoutFile: LayoutFile): BoxState[] => {
-  const imageMap = new Map<string, string>();
-  layoutFile.images.forEach(img => {
-    imageMap.set(img.id, img.data);
-  });
+export const loadLayout = (layout: LayoutFile): BoxState[] => {
+  const imageMap = new Map(layout.images.map(img => [img.id, img.data]));
 
-  const processNode = (node: BoxState): BoxState => {
-    const processedNode = { ...node };
+  const processBox = (box: BoxState): BoxState => {
+    const newBox = { ...box };
 
-    if (node.backgroundImage && imageMap.has(node.backgroundImage)) {
-      processedNode.backgroundImage = imageMap.get(node.backgroundImage);
+    if (box.backgroundImage && imageMap.has(box.backgroundImage)) {
+      newBox.backgroundImage = imageMap.get(box.backgroundImage);
     }
 
-    if (node.children) {
-      processedNode.children = node.children.map(child => processNode(child));
+    if (box.children) {
+      newBox.children = box.children.map(processBox);
     }
 
-    return processedNode;
+    return newBox;
   };
 
-  return layoutFile.layout.map(box => processNode(box));
+  return layout.boxes.map(processBox);
 };
 
 export const downloadLayout = (layout: LayoutFile) => {
@@ -72,7 +66,7 @@ export const downloadLayout = (layout: LayoutFile) => {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `layout_${new Date().toISOString().slice(0, 19).replace(/[:-]/g, '')}.json`;
+  a.download = 'layout.json';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
