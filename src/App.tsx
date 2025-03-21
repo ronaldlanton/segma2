@@ -1,4 +1,4 @@
-import React, { useState, useCallback, MouseEvent, useRef, useEffect } from 'react'
+import React, { useState, useCallback, useRef, useEffect } from 'react'
 import './App.css'
 
 interface GridDialogProps {
@@ -62,7 +62,6 @@ interface SplitBoxProps {
   onColorChange?: (color: string | null) => void;
   onImageChange?: (image: string | null) => void;
   onPaddingChange?: (position: 'top' | 'right' | 'bottom' | 'left', value: number) => void;
-  showMerge?: boolean;
   backgroundColor?: string | null;
   backgroundImage?: string | null;
   padding?: {
@@ -111,47 +110,6 @@ const ImageIcon = () => (
   </svg>
 );
 
-interface TooltipProps {
-  text: string;
-}
-
-const Tooltip: React.FC<TooltipProps> = ({ text }) => {
-  const [isVisible, setIsVisible] = useState(false);
-  const timeoutRef = useRef<number>();
-
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        window.clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
-
-  const handleMouseEnter = () => {
-    if (timeoutRef.current) {
-      window.clearTimeout(timeoutRef.current);
-    }
-    timeoutRef.current = window.setTimeout(() => {
-      setIsVisible(true);
-    }, 2000);
-  };
-
-  const handleMouseLeave = () => {
-    if (timeoutRef.current) {
-      window.clearTimeout(timeoutRef.current);
-    }
-    setIsVisible(false);
-  };
-
-  return (
-    <div 
-      className={`tooltip ${isVisible ? 'visible' : ''}`}
-    >
-      {text}
-    </div>
-  );
-};
-
 const SplitButton: React.FC<{
   onClick: () => void;
   className?: string;
@@ -160,22 +118,6 @@ const SplitButton: React.FC<{
 }> = ({ onClick, className = '', tooltip, children }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const timeoutRef = useRef<number>();
-
-  const handleMouseEnter = useCallback((e: React.MouseEvent) => {
-    if (timeoutRef.current) {
-      window.clearTimeout(timeoutRef.current);
-    }
-    timeoutRef.current = window.setTimeout(() => {
-      setShowTooltip(true);
-    }, 500);
-  }, []);
-
-  const handleMouseLeave = useCallback((e: React.MouseEvent) => {
-    if (timeoutRef.current) {
-      window.clearTimeout(timeoutRef.current);
-    }
-    setShowTooltip(false);
-  }, []);
 
   useEffect(() => {
     return () => {
@@ -189,8 +131,20 @@ const SplitButton: React.FC<{
     <button
       className={`split-button ${className}`}
       onClick={onClick}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      onMouseEnter={() => {
+        if (timeoutRef.current) {
+          window.clearTimeout(timeoutRef.current);
+        }
+        timeoutRef.current = window.setTimeout(() => {
+          setShowTooltip(true);
+        }, 500);
+      }}
+      onMouseLeave={() => {
+        if (timeoutRef.current) {
+          window.clearTimeout(timeoutRef.current);
+        }
+        setShowTooltip(false);
+      }}
     >
       {children}
       <div className={`tooltip ${showTooltip ? 'visible' : ''}`}>
@@ -207,7 +161,6 @@ const SplitBox: React.FC<SplitBoxProps> = ({
   onDelete,
   onColorChange,
   onImageChange,
-  showMerge,
   backgroundColor,
   backgroundImage,
   padding = { top: 0, right: 0, bottom: 0, left: 0 },
@@ -352,7 +305,7 @@ interface BoxState {
   backgroundImage?: string | null;
   rows?: number;
   columns?: number;
-  padding?: {
+  padding: {
     top: number;
     right: number;
     bottom: number;
@@ -369,7 +322,7 @@ interface DividerProps {
 const Divider: React.FC<DividerProps> = ({ isVertical, onResize, initialRatio }) => {
   const [isDragging, setIsDragging] = useState(false);
 
-  const handleMouseDown = (e: MouseEvent) => {
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     setIsDragging(true);
 
@@ -381,7 +334,7 @@ const Divider: React.FC<DividerProps> = ({ isVertical, onResize, initialRatio })
     const containerSize = isVertical ? containerRect.height : containerRect.width;
     const padding = 16; // Account for container padding
 
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleMouseMove = (e: React.MouseEvent) => {
       if (!isDragging) return;
 
       const currentPosition = isVertical ? e.clientY : e.clientX;
@@ -394,18 +347,18 @@ const Divider: React.FC<DividerProps> = ({ isVertical, onResize, initialRatio })
 
     const handleMouseUp = () => {
       setIsDragging(false);
-      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mousemove', handleMouseMove as unknown as EventListener);
       document.removeEventListener('mouseup', handleMouseUp);
     };
 
-    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mousemove', handleMouseMove as unknown as EventListener);
     document.addEventListener('mouseup', handleMouseUp);
-  };
+  }, [isDragging, initialRatio, isVertical, onResize]);
 
   return (
     <div
       className={`divider ${isVertical ? 'vertical' : 'horizontal'} ${isDragging ? 'dragging' : ''}`}
-      onMouseDown={handleMouseDown as any}
+      onMouseDown={handleMouseDown}
     />
   );
 };
@@ -420,7 +373,7 @@ const PaddingHandle: React.FC<PaddingHandleProps> = ({ position, value, onChange
   const [isDragging, setIsDragging] = useState(false);
   const sensitivity = 0.33; // Reduce movement sensitivity
 
-  const handleMouseDown = (e: MouseEvent) => {
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     setIsDragging(true);
 
@@ -429,7 +382,7 @@ const PaddingHandle: React.FC<PaddingHandleProps> = ({ position, value, onChange
     const startValue = value;
     const isShiftPressed = e.shiftKey;
 
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleMouseMove = (e: React.MouseEvent) => {
       if (!isDragging) return;
 
       const deltaX = e.clientX - startX;
@@ -461,18 +414,18 @@ const PaddingHandle: React.FC<PaddingHandleProps> = ({ position, value, onChange
 
     const handleMouseUp = () => {
       setIsDragging(false);
-      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mousemove', handleMouseMove as unknown as EventListener);
       document.removeEventListener('mouseup', handleMouseUp);
     };
 
-    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mousemove', handleMouseMove as unknown as EventListener);
     document.addEventListener('mouseup', handleMouseUp);
-  };
+  }, [isDragging, onChange, position, value]);
 
   return (
     <div
       className={`padding-handle ${position} ${isDragging ? 'dragging' : ''}`}
-      onMouseDown={handleMouseDown as any}
+      onMouseDown={handleMouseDown}
     />
   );
 };
@@ -486,7 +439,7 @@ const App: React.FC = () => {
     }
   ]);
 
-  const handleSplit = (id: string, splitType: 'vertical' | 'horizontal') => {
+  const handleSplit = useCallback((id: string, splitType: 'vertical' | 'horizontal') => {
     setBoxes(prevBoxes => {
       const updateNode = (node: BoxState): BoxState => {
         if (node.id === id) {
@@ -497,7 +450,8 @@ const App: React.FC = () => {
               { id: `${node.id}-1`, type: 'single', padding: { top: 0, right: 0, bottom: 0, left: 0 } },
               { id: `${node.id}-2`, type: 'single', padding: { top: 0, right: 0, bottom: 0, left: 0 } }
             ],
-            ratio: 0.5
+            ratio: 0.5,
+            padding: node.padding
           };
         }
 
@@ -513,9 +467,9 @@ const App: React.FC = () => {
 
       return prevBoxes.map(box => updateNode(box));
     });
-  };
+  }, []);
 
-  const handleSplitGrid = (id: string, rows: number, columns: number) => {
+  const handleSplitGrid = useCallback((id: string, rows: number, columns: number) => {
     setBoxes(prevBoxes => {
       const updateNode = (node: BoxState): BoxState => {
         if (node.id === id) {
@@ -532,7 +486,8 @@ const App: React.FC = () => {
             type: 'grid',
             children,
             rows,
-            columns
+            columns,
+            padding: node.padding
           };
         }
 
@@ -548,9 +503,9 @@ const App: React.FC = () => {
 
       return prevBoxes.map(box => updateNode(box));
     });
-  };
+  }, []);
 
-  const handleResize = (id: string, ratio: number) => {
+  const handleResize = useCallback((id: string, ratio: number) => {
     setBoxes(prevBoxes => {
       const updateNode = (node: BoxState): BoxState => {
         if (node.children?.some(child => child.id === id)) {
@@ -572,34 +527,9 @@ const App: React.FC = () => {
 
       return prevBoxes.map(box => updateNode(box));
     });
-  };
+  }, []);
 
-  const handleMerge = (id: string) => {
-    setBoxes(prevBoxes => {
-      const updateNode = (node: BoxState): BoxState => {
-        if (node.id === id) {
-          return {
-            id: node.id,
-            type: 'single',
-            padding: { top: 0, right: 0, bottom: 0, left: 0 }
-          };
-        }
-
-        if (node.children) {
-          return {
-            ...node,
-            children: node.children.map(child => updateNode(child))
-          };
-        }
-
-        return node;
-      };
-
-      return prevBoxes.map(box => updateNode(box));
-    });
-  };
-
-  const handleDelete = (id: string) => {
+  const handleDelete = useCallback((id: string) => {
     setBoxes(prevBoxes => {
       const updateNode = (node: BoxState): BoxState | undefined => {
         if (node.children) {
@@ -638,9 +568,9 @@ const App: React.FC = () => {
         padding: { top: 0, right: 0, bottom: 0, left: 0 }
       }];
     });
-  };
+  }, []);
 
-  const handleColorChange = (id: string, color: string | null) => {
+  const handleColorChange = useCallback((id: string, color: string | null) => {
     setBoxes(prevBoxes => {
       const updateNode = (node: BoxState): BoxState => {
         if (node.id === id) {
@@ -662,9 +592,9 @@ const App: React.FC = () => {
 
       return prevBoxes.map(box => updateNode(box));
     });
-  };
+  }, []);
 
-  const handleImageChange = (id: string, image: string | null) => {
+  const handleImageChange = useCallback((id: string, image: string | null) => {
     setBoxes(prevBoxes => {
       const updateNode = (node: BoxState): BoxState => {
         if (node.id === id) {
@@ -686,9 +616,9 @@ const App: React.FC = () => {
 
       return prevBoxes.map(box => updateNode(box));
     });
-  };
+  }, []);
 
-  const handlePaddingChange = (id: string, position: 'top' | 'right' | 'bottom' | 'left', value: number) => {
+  const handlePaddingChange = useCallback((id: string, position: 'top' | 'right' | 'bottom' | 'left', value: number) => {
     setBoxes(prevBoxes => {
       const updateNode = (node: BoxState): BoxState => {
         if (node.id === id) {
@@ -713,9 +643,9 @@ const App: React.FC = () => {
 
       return prevBoxes.map(box => updateNode(box));
     });
-  };
+  }, []);
 
-  const renderBox = (box: BoxState) => {
+  const renderBox = useCallback((box: BoxState) => {
     if (box.type === 'single') {
       return (
         <SplitBox
@@ -742,7 +672,7 @@ const App: React.FC = () => {
             gridTemplateRows: `repeat(${box.rows}, 1fr)`
           }}
         >
-          {box.children.map((child, index) => (
+          {box.children.map((child) => (
             <div key={child.id} className="grid-item">
               {renderBox(child)}
             </div>
@@ -774,7 +704,7 @@ const App: React.FC = () => {
         </div>
       </div>
     );
-  };
+  }, [boxes.length, handleColorChange, handleDelete, handleImageChange, handlePaddingChange, handleResize, handleSplit, handleSplitGrid]);
 
   return (
     <div className="container">
